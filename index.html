@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cold War Vocabulary Practice</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0d1b2a;
+    --red: #c1121f;
+    --gold: #e9c46a;
+    --cream: #f5f0e8;
+    --steel: #4a6fa5;
+    --light: #d8e4f0;
+    --green: #2d6a4f;
+    --correct: #2d6a4f;
+    --wrong: #c1121f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--navy);
+    color: var(--cream);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(74,111,165,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(193,18,31,0.1) 0%, transparent 50%);
+  }
+
+  /* NAME GATE */
+  #name-gate {
+    position: fixed; inset: 0;
+    background: rgba(13,27,42,0.97);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+    backdrop-filter: blur(4px);
+  }
+  .name-box {
+    background: linear-gradient(145deg, #1a2f47, #0d1b2a);
+    border: 2px solid var(--gold);
+    border-radius: 16px;
+    padding: 40px 36px;
+    max-width: 420px; width: 90%;
+    text-align: center;
+  }
+  .name-box h2 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.6rem;
+    color: var(--gold);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .name-box p { color: var(--light); font-size: 0.9rem; margin-bottom: 24px; line-height: 1.5; }
+  .name-box input {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.07);
+    border: 2px solid rgba(74,111,165,0.5);
+    border-radius: 8px;
+    color: var(--cream);
+    font-size: 1rem;
+    font-family: 'Source Sans 3', sans-serif;
+    margin-bottom: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .name-box input:focus { border-color: var(--gold); }
+  .name-box button {
+    width: 100%;
+    padding: 12px;
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .name-box button:hover { background: #f4d47a; }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #0d1b2a 0%, #1a2f47 100%);
+    border-bottom: 3px solid var(--gold);
+    padding: 16px 24px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  }
+  .header-left h1 { font-family: 'Oswald', sans-serif; font-size: 1.5rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; }
+  .header-left p { font-size: 0.82rem; color: var(--light); opacity: 0.7; margin-top: 2px; }
+  .header-right { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .score-badge { background: var(--gold); color: var(--navy); font-family: 'Oswald', sans-serif; font-size: 0.95rem; font-weight: 700; padding: 6px 16px; border-radius: 4px; letter-spacing: 1px; }
+  .student-name-tag { font-family: 'Oswald', sans-serif; font-size: 0.85rem; color: var(--light); letter-spacing: 1px; opacity: 0.75; }
+
+  /* PROGRESS TRACKER */
+  .progress-tracker {
+    background: rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(233,196,106,0.15);
+    padding: 10px 24px;
+    display: flex; gap: 16px; flex-wrap: wrap; align-items: center;
+  }
+  .tracker-label { font-family: 'Oswald', sans-serif; font-size: 0.75rem; color: var(--light); opacity: 0.5; letter-spacing: 2px; text-transform: uppercase; margin-right: 4px; }
+  .tracker-item {
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'Oswald', sans-serif; font-size: 0.8rem; letter-spacing: 1px;
+    color: rgba(245,240,232,0.4);
+    transition: color 0.3s;
+  }
+  .tracker-item.done { color: #6fcf97; }
+  .tracker-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.2);
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+  .tracker-item.done .tracker-dot { background: #6fcf97; border-color: #6fcf97; box-shadow: 0 0 6px rgba(111,207,151,0.5); }
+
+  /* MODE BAR */
+  .mode-bar {
+    display: flex; gap: 0;
+    background: rgba(255,255,255,0.04);
+    border-bottom: 2px solid rgba(233,196,106,0.15);
+    padding: 0 24px; overflow-x: auto;
+  }
+  .mode-btn {
+    font-family: 'Oswald', sans-serif; font-size: 0.88rem; letter-spacing: 1px; text-transform: uppercase;
+    padding: 13px 20px; background: none; border: none; color: rgba(245,240,232,0.45);
+    cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; white-space: nowrap;
+    position: relative;
+  }
+  .mode-btn:hover { color: var(--cream); }
+  .mode-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .mode-btn .check-badge {
+    position: absolute; top: 6px; right: 4px;
+    width: 14px; height: 14px; background: #6fcf97; border-radius: 50%;
+    font-size: 9px; color: #0d1b2a; display: none;
+    align-items: center; justify-content: center; font-weight: 900;
+  }
+  .mode-btn.completed .check-badge { display: flex; }
+
+  /* MAIN */
+  .main { max-width: 860px; margin: 0 auto; padding: 26px 20px; }
+  .mode-panel { display: none; }
+  .mode-panel.active { display: block; }
+  .section-title { font-family: 'Oswald', sans-serif; font-size: 1.2rem; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+  .section-desc { font-size: 0.88rem; color: var(--light); opacity: 0.72; margin-bottom: 22px; line-height: 1.5; }
+
+  /* ===== DEFINITION MATCH (was flashcard) ===== */
+  .dm-area { display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%; }
+  .progress-bar-wrap { width: 100%; background: rgba(255,255,255,0.08); border-radius: 4px; height: 5px; }
+  .progress-bar-fill { height: 5px; background: var(--gold); border-radius: 4px; transition: width 0.4s ease; }
+  .card-counter { font-size: 0.82rem; color: var(--light); opacity: 0.55; align-self: flex-end; font-family: 'Oswald', sans-serif; letter-spacing: 1px; }
+
+  /* Score tally strip */
+  .dm-tally { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .tally-chip { padding: 5px 14px; border-radius: 20px; font-size: 0.78rem; font-family: 'Oswald', sans-serif; letter-spacing: 1px; }
+  .tally-chip.correct-chip { background: rgba(45,106,79,0.25); color: #6fcf97; border: 1px solid rgba(45,106,79,0.45); }
+  .tally-chip.wrong-chip   { background: rgba(193,18,31,0.18); color: #ff8080; border: 1px solid rgba(193,18,31,0.35); }
+
+  /* Definition card */
+  .dm-card {
+    width: 100%; max-width: 540px;
+    background: linear-gradient(145deg, #1a2f47, #0d1b2a);
+    border: 2px solid var(--steel); border-radius: 14px;
+    padding: 28px 28px 22px; text-align: center;
+    transition: border-color 0.3s;
+  }
+  .dm-card.correct-card { border-color: var(--green); }
+  .dm-card.wrong-card   { border-color: var(--red); }
+  .dm-emoji { font-size: 2.6rem; margin-bottom: 10px; }
+  .dm-prompt-label { font-family: 'Oswald', sans-serif; font-size: 0.7rem; letter-spacing: 3px; color: var(--light); opacity: 0.45; text-transform: uppercase; margin-bottom: 10px; }
+  .dm-definition { font-size: 1.08rem; line-height: 1.65; color: var(--cream); }
+  .dm-definition b { color: var(--gold); }
+
+  /* Feedback bar inside card */
+  .dm-feedback {
+    margin-top: 16px; padding: 10px 14px; border-radius: 8px;
+    font-family: 'Oswald', sans-serif; font-size: 0.95rem; letter-spacing: 1px;
+    display: none; text-align: center;
+  }
+  .dm-feedback.correct { background: rgba(45,106,79,0.3); color: #6fcf97; display: block; }
+  .dm-feedback.wrong   { background: rgba(193,18,31,0.2); color: #ff9999; display: block; }
+
+  /* Answer choices */
+  .dm-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 540px; }
+  .dm-choice {
+    padding: 13px 14px; border-radius: 8px;
+    background: rgba(74,111,165,0.14); border: 2px solid rgba(74,111,165,0.35);
+    font-family: 'Oswald', sans-serif; font-size: 1rem; letter-spacing: 1px;
+    color: var(--cream); text-transform: uppercase; cursor: pointer;
+    transition: all 0.18s; text-align: center;
+  }
+  .dm-choice:hover:not(:disabled) { border-color: var(--gold); background: rgba(233,196,106,0.12); color: var(--gold); transform: translateY(-2px); }
+  .dm-choice.correct-ans { border-color: var(--green); background: rgba(45,106,79,0.28); color: #6fcf97; }
+  .dm-choice.wrong-ans   { border-color: var(--red);   background: rgba(193,18,31,0.22); color: #ff9999; }
+  .dm-choice:disabled { cursor: default; transform: none; }
+
+  /* Next button */
+  .dm-next { display: none; }
+
+  .fc-done-msg { text-align: center; padding: 30px 20px; }
+  .fc-done-msg .trophy { font-size: 3.5rem; margin-bottom: 12px; }
+  .fc-done-msg h3 { font-family: 'Oswald', sans-serif; font-size: 1.5rem; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .fc-done-msg p { font-size: 0.9rem; color: var(--light); margin-bottom: 20px; line-height: 1.5; }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .action-btn { padding: 10px 24px; border-radius: 6px; border: none; font-family: 'Oswald', sans-serif; font-size: 0.9rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+  .action-btn.primary { background: var(--gold); color: var(--navy); }
+  .action-btn.primary:hover { background: #f4d47a; }
+  .action-btn.secondary { background: rgba(74,111,165,0.3); color: var(--light); border: 1px solid rgba(74,111,165,0.5); }
+  .action-btn.secondary:hover { background: rgba(74,111,165,0.5); }
+  .action-btn.danger { background: rgba(193,18,31,0.2); color: #ff8080; border: 1px solid rgba(193,18,31,0.4); }
+  .action-btn.danger:hover { background: rgba(193,18,31,0.35); }
+
+  /* ===== MATCH ===== */
+  .match-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 9px; margin-bottom: 16px; }
+  .match-card { background: rgba(74,111,165,0.12); border: 2px solid rgba(74,111,165,0.35); border-radius: 8px; padding: 12px 10px; text-align: center; cursor: pointer; transition: all 0.2s; min-height: 66px; display: flex; align-items: center; justify-content: center; font-size: 0.88rem; line-height: 1.4; color: var(--cream); }
+  .match-card.term { font-family: 'Oswald', sans-serif; font-size: 0.98rem; letter-spacing: 1px; color: var(--gold); text-transform: uppercase; }
+  .match-card:hover:not(.matched):not(.selected) { border-color: var(--gold); background: rgba(233,196,106,0.1); transform: translateY(-2px); }
+  .match-card.selected { border-color: var(--steel); background: rgba(74,111,165,0.32); box-shadow: 0 0 10px rgba(74,111,165,0.45); }
+  .match-card.matched { border-color: var(--green); background: rgba(45,106,79,0.22); color: #6fcf97; cursor: default; opacity: 0.65; }
+  .match-card.wrong-flash { animation: shake 0.3s ease; border-color: var(--red); background: rgba(193,18,31,0.18); }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+  .match-feedback { text-align: center; font-family: 'Oswald', sans-serif; font-size: 0.95rem; letter-spacing: 1px; min-height: 26px; color: var(--gold); margin-bottom: 14px; }
+  .match-round-info { font-size: 0.8rem; color: var(--light); opacity: 0.55; font-family: 'Oswald', sans-serif; letter-spacing: 1px; }
+
+  /* ===== SENTENCES ===== */
+  .sentence-card { background: linear-gradient(135deg, rgba(26,47,71,0.75), rgba(13,27,42,0.88)); border: 2px solid rgba(74,111,165,0.25); border-radius: 12px; padding: 24px; margin-bottom: 14px; }
+  .sentence-prompt { font-size: 1.02rem; line-height: 2.2; color: var(--cream); margin-bottom: 16px; }
+
+  /* Drag chips in word bank */
+  .word-bank { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; padding: 16px; background: rgba(255,255,255,0.03); border-radius: 10px; border: 1px dashed rgba(233,196,106,0.2); min-height: 56px; }
+  .word-bank-label { font-family: 'Oswald', sans-serif; font-size: 0.72rem; letter-spacing: 2px; color: var(--light); opacity: 0.5; text-transform: uppercase; margin-bottom: 8px; }
+  .drag-chip {
+    padding: 8px 16px;
+    background: rgba(74,111,165,0.25);
+    border: 1.5px solid rgba(74,111,165,0.55);
+    border-radius: 20px;
+    font-size: 0.88rem;
+    color: var(--light);
+    cursor: grab;
+    transition: all 0.18s;
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    user-select: none;
+    touch-action: none;
+  }
+  .drag-chip:hover { background: rgba(233,196,106,0.2); border-color: var(--gold); color: var(--gold); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+  .drag-chip.dragging { opacity: 0.35; cursor: grabbing; }
+  .drag-chip.ghost {
+    position: fixed; pointer-events: none; z-index: 999;
+    background: rgba(233,196,106,0.9); color: var(--navy);
+    border-color: var(--gold); box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    transform: rotate(-2deg) scale(1.08);
+  }
+
+  /* Drop zones (blanks) */
+  .blank {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 120px; height: 32px;
+    border-bottom: 2px solid var(--gold);
+    border-radius: 4px 4px 0 0;
+    color: rgba(233,196,106,0.5);
+    font-family: 'Oswald', sans-serif; font-size: 0.82rem; letter-spacing: 2px;
+    padding: 0 8px; vertical-align: middle; margin: 0 3px;
+    transition: all 0.18s; cursor: default;
+    background: rgba(233,196,106,0.04);
+  }
+  .blank.drag-over {
+    background: rgba(233,196,106,0.18);
+    border-bottom-color: #f4d47a;
+    border-bottom-width: 3px;
+    box-shadow: 0 2px 10px rgba(233,196,106,0.2);
+  }
+  .blank.filled {
+    background: rgba(45,106,79,0.15);
+    border-bottom-color: #6fcf97;
+    color: #6fcf97;
+    cursor: pointer;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+  }
+  .blank.filled:hover { background: rgba(193,18,31,0.15); border-bottom-color: var(--red); color: #ffaaaa; }
+
+  .answer-reveal { margin-top: 12px; padding: 12px 16px; border-radius: 8px; font-size: 0.88rem; line-height: 1.5; display: none; }
+  .answer-reveal.correct { background: rgba(45,106,79,0.22); border-left: 4px solid var(--green); color: #6fcf97; display: block; }
+  .answer-reveal.incorrect { background: rgba(193,18,31,0.18); border-left: 4px solid var(--red); color: #ffaaaa; display: block; }
+
+  /* ===== WORD SORT ===== */
+  .sort-instructions { background: rgba(233,196,106,0.07); border: 1px solid rgba(233,196,106,0.18); border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; font-size: 0.86rem; color: var(--light); line-height: 1.5; }
+  .sort-categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-bottom: 18px; }
+  .sort-category { border-radius: 10px; padding: 14px; min-height: 140px; cursor: pointer; transition: outline 0.15s; }
+  .sort-category.politics { background: rgba(193,18,31,0.08); border: 2px dashed rgba(193,18,31,0.38); }
+  .sort-category.military { background: rgba(74,111,165,0.08); border: 2px dashed rgba(74,111,165,0.38); }
+  .sort-category.economics { background: rgba(45,106,79,0.08); border: 2px dashed rgba(45,106,79,0.38); }
+  .sort-category.both { background: rgba(233,196,106,0.06); border: 2px dashed rgba(233,196,106,0.28); }
+  .sort-category.highlight { outline: 3px solid var(--gold); }
+  .cat-title { font-family: 'Oswald', sans-serif; font-size: 0.82rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 9px; opacity: 0.78; }
+  .sort-category.politics .cat-title { color: #ff7070; }
+  .sort-category.military .cat-title { color: #7bafd4; }
+  .sort-category.economics .cat-title { color: #6fcf97; }
+  .sort-category.both .cat-title { color: var(--gold); }
+  .dropped-words { display: flex; flex-wrap: wrap; gap: 5px; min-height: 36px; }
+  .sort-word-pool { display: flex; flex-wrap: wrap; gap: 7px; background: rgba(255,255,255,0.03); border-radius: 8px; padding: 14px; margin-bottom: 14px; min-height: 64px; }
+  .sortable-word { padding: 6px 12px; background: rgba(13,27,42,0.8); border: 1px solid rgba(74,111,165,0.45); border-radius: 4px; font-family: 'Oswald', sans-serif; font-size: 0.82rem; letter-spacing: 1px; color: var(--cream); cursor: pointer; transition: all 0.18s; text-transform: uppercase; user-select: none; }
+  .sortable-word:hover { border-color: var(--gold); color: var(--gold); transform: scale(1.04); }
+  .sortable-word.placed { opacity: 0.28; pointer-events: none; }
+  .placed-word { padding: 4px 11px; background: rgba(255,255,255,0.07); border-radius: 4px; font-family: 'Oswald', sans-serif; font-size: 0.78rem; letter-spacing: 1px; color: var(--cream); text-transform: uppercase; cursor: pointer; transition: all 0.18s; }
+  .placed-word:hover { background: rgba(193,18,31,0.2); color: #ffaaaa; }
+  .sort-reveal { margin-top: 12px; padding: 14px 18px; background: rgba(233,196,106,0.07); border-radius: 8px; font-size: 0.86rem; color: var(--light); display: none; line-height: 1.7; }
+
+  /* ===== COMPLETION SCREEN ===== */
+  #completion-screen {
+    display: none; position: fixed; inset: 0; background: rgba(13,27,42,0.97);
+    align-items: center; justify-content: center; z-index: 99; backdrop-filter: blur(4px);
+  }
+  #completion-screen.show { display: flex; }
+  .completion-box {
+    background: linear-gradient(145deg, #1a2f47, #0d1b2a);
+    border: 2px solid var(--gold); border-radius: 16px;
+    padding: 36px 28px; max-width: 520px; width: 92%; text-align: center;
+    animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    max-height: 92vh; overflow-y: auto;
+  }
+  @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .completion-box .big-trophy { font-size: 3.5rem; margin-bottom: 12px; }
+  .completion-box h2 { font-family: 'Oswald', sans-serif; font-size: 1.8rem; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 6px; }
+  .completion-box .sub { font-size: 0.86rem; color: var(--light); opacity: 0.7; margin-bottom: 20px; line-height: 1.6; }
+  #cert-preview-wrap { margin-bottom: 18px; border-radius: 8px; overflow: hidden; border: 2px solid rgba(233,196,106,0.35); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+  #cert-preview-wrap canvas { display: block; width: 100%; height: auto; }
+  .dl-btn { padding: 13px 32px; background: var(--gold); color: var(--navy); border: none; border-radius: 8px; font-family: 'Oswald', sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; width: 100%; margin-bottom: 10px; }
+  .dl-btn:hover { background: #f4d47a; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(233,196,106,0.3); }
+  .dl-instructions { font-size: 0.8rem; color: var(--light); opacity: 0.6; margin-bottom: 14px; line-height: 1.6; }
+  .dl-instructions strong { color: var(--gold); opacity: 1; }
+  .close-completion { font-size: 0.8rem; color: var(--light); opacity: 0.4; cursor: pointer; text-decoration: underline; }
+  .close-completion:hover { opacity: 0.75; }
+
+  @media (max-width:500px) {
+    .match-grid { grid-template-columns: 1fr 1fr; }
+    .card-term { font-size: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAME GATE -->
+<div id="name-gate">
+  <div class="name-box">
+    <div style="font-size:2.5rem;margin-bottom:12px">⚔️</div>
+    <h2>Cold War Vocabulary</h2>
+    <p>Type your first and last name to begin. Your name will appear on your completion certificate when you finish all 4 activities.</p>
+    <input type="text" id="student-name-input" placeholder="First and Last Name" maxlength="50"
+      onkeydown="if(event.key==='Enter') startGame()">
+    <button onclick="startGame()">Start Practice →</button>
+  </div>
+</div>
+
+<!-- COMPLETION SCREEN -->
+<div id="completion-screen">
+  <div class="completion-box">
+    <div class="big-trophy">🏆</div>
+    <h2>All Done!</h2>
+    <p class="sub">You finished all 4 vocabulary activities! Download your certificate and upload it to the Canvas assignment.</p>
+    <div id="cert-preview-wrap"><canvas id="cert-canvas"></canvas></div>
+    <p class="dl-instructions">
+      <strong>How to submit:</strong> Click "Download Certificate" → find the file in your Downloads folder → go to the Canvas assignment → upload the file → Submit.<br><br>
+      <span style="opacity:0.7">If the download doesn't start, the image will open in a new tab — right-click it and choose <em>Save image as</em>.</span>
+    </p>
+    <button class="dl-btn" onclick="downloadCert()">⬇️ Download Certificate</button>
+    <div class="close-completion" onclick="document.getElementById('completion-screen').classList.remove('show')">Keep practicing →</div>
+  </div>
+</div>
+
+<header>
+  <div class="header-left">
+    <h1>⚔️ Cold War Vocabulary</h1>
+    <p>US History · ELL Practice · 12 Terms</p>
+  </div>
+  <div class="header-right">
+    <span class="student-name-tag" id="name-display"></span>
+    <div class="score-badge">⭐ <span id="score">0</span> pts</div>
+  </div>
+</header>
+
+<div class="progress-tracker">
+  <span class="tracker-label">Progress:</span>
+  <div class="tracker-item" id="track-flashcard"><div class="tracker-dot"></div>Def. Match</div>
+  <div class="tracker-item" id="track-match"><div class="tracker-dot"></div>Match It</div>
+  <div class="tracker-item" id="track-sentences"><div class="tracker-dot"></div>Fill In</div>
+  <div class="tracker-item" id="track-sort"><div class="tracker-dot"></div>Word Sort</div>
+</div>
+
+<div class="mode-bar">
+  <button class="mode-btn active" id="btn-flashcard" onclick="switchMode('flashcard',this)">
+    🎯 Def. Match<span class="check-badge">✓</span>
+  </button>
+  <button class="mode-btn" id="btn-match" onclick="switchMode('match',this)">
+    🔗 Match It<span class="check-badge">✓</span>
+  </button>
+  <button class="mode-btn" id="btn-sentences" onclick="switchMode('sentences',this)">
+    ✏️ Fill In<span class="check-badge">✓</span>
+  </button>
+  <button class="mode-btn" id="btn-sort" onclick="switchMode('sort',this)">
+    🗂️ Word Sort<span class="check-badge">✓</span>
+  </button>
+</div>
+
+<div class="main">
+
+  <!-- ===== DEFINITION MATCH ===== -->
+  <div id="mode-flashcard" class="mode-panel active">
+    <div class="section-title">Definition Match</div>
+    <p class="section-desc">Read the definition and emoji clue, then pick the correct term. You must answer all 12 to complete this activity.</p>
+    <div class="dm-area">
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="fc-progress" style="width:0%"></div></div>
+      <div class="card-counter" id="fc-counter">Question 1 of 12</div>
+      <div class="dm-tally">
+        <div class="tally-chip correct-chip">✅ Correct: <span id="tally-correct">0</span></div>
+        <div class="tally-chip wrong-chip">❌ Incorrect: <span id="tally-wrong">0</span></div>
+      </div>
+
+      <div class="dm-card" id="dm-card">
+        <div class="dm-emoji" id="dm-emoji"></div>
+        <div class="dm-prompt-label">What term matches this definition?</div>
+        <div class="dm-definition" id="dm-def"></div>
+        <div class="dm-feedback" id="dm-feedback"></div>
+      </div>
+
+      <div class="dm-choices" id="dm-choices"></div>
+
+      <button class="action-btn primary dm-next" id="dm-next" onclick="dmNext()">Next →</button>
+
+      <div id="fc-done" style="display:none; width:100%">
+        <div class="fc-done-msg">
+          <div class="trophy">🎯</div>
+          <h3 id="fc-done-title">Round Complete!</h3>
+          <p id="fc-done-body"></p>
+          <div class="btn-row">
+            <button class="action-btn primary" id="drill-again-btn" onclick="dmStartMissed()" style="display:none">
+              🔁 Retry Missed Words (<span id="learning-count">0</span>)
+            </button>
+            <button class="action-btn secondary" onclick="dmInit()">🔁 Start Over</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MATCH ===== -->
+  <div id="mode-match" class="mode-panel">
+    <div class="section-title">Match It</div>
+    <p class="section-desc">Click a <strong style="color:var(--gold)">word</strong>, then click its matching definition. Complete <strong style="color:var(--gold)">both rounds</strong> to finish this activity.</p>
+    <div class="match-feedback" id="match-feedback">Select a word to begin.</div>
+    <div class="match-round-info" style="text-align:center;margin-bottom:14px" id="match-round-info">Round 1 of 2 · Pairs found: <span id="match-score">0</span>/6</div>
+    <div class="match-grid" id="match-grid"></div>
+    <div class="btn-row"><button class="action-btn secondary" onclick="initMatch()">🔁 New Round</button></div>
+  </div>
+
+  <!-- ===== FILL IN ===== -->
+  <div id="mode-sentences" class="mode-panel">
+    <div class="section-title">Fill In the Blank</div>
+    <p class="section-desc">Click a word from the word bank, then click on a blank to fill it in. Click a filled blank to remove the word.</p>
+    <div id="word-bank-container"></div>
+    <div id="sentences-container"></div>
+    <div class="btn-row" style="margin-top:6px">
+      <button class="action-btn primary" onclick="checkSentences()" id="check-sentences-btn">Check My Answers</button>
+      <button class="action-btn secondary" onclick="initSentences()">🔁 Reset</button>
+    </div>
+  </div>
+
+  <!-- ===== SORT ===== -->
+  <div id="mode-sort" class="mode-panel">
+    <div class="section-title">Word Sort</div>
+    <p class="section-desc">Click a word from the pool, then click a category to place it. Click a placed word to return it. Sort all 12 words to finish.</p>
+    <div class="sort-instructions">💡 <strong>Discussion question:</strong> After sorting, discuss with a partner — could any word fit in more than one category? Why?</div>
+    <div class="sort-word-pool" id="sort-pool"></div>
+    <div class="sort-categories">
+      <div class="sort-category politics" onclick="placeInCategory('politics')">
+        <div class="cat-title">🏛️ Political / Government</div>
+        <div class="dropped-words" id="dropped-politics"></div>
+      </div>
+      <div class="sort-category military" onclick="placeInCategory('military')">
+        <div class="cat-title">🪖 Military / Conflict</div>
+        <div class="dropped-words" id="dropped-military"></div>
+      </div>
+      <div class="sort-category economics" onclick="placeInCategory('economics')">
+        <div class="cat-title">💵 Economic / Resources</div>
+        <div class="dropped-words" id="dropped-economics"></div>
+      </div>
+      <div class="sort-category both" onclick="placeInCategory('both')">
+        <div class="cat-title">🔁 More Than One Category</div>
+        <div class="dropped-words" id="dropped-both"></div>
+      </div>
+    </div>
+    <div id="sort-remaining" style="text-align:center;font-family:'Oswald',sans-serif;font-size:0.82rem;color:var(--light);opacity:0.6;letter-spacing:1px;margin-bottom:12px"></div>
+    <div class="btn-row">
+      <button class="action-btn primary" onclick="checkSort()">Show One Possible Answer</button>
+      <button class="action-btn secondary" onclick="initSort()">🔁 Reset</button>
+    </div>
+    <div class="sort-reveal" id="sort-reveal">
+      <strong style="color:var(--gold)">One possible answer:</strong><br><br>
+      🏛️ <strong>Political:</strong> Democracy, Communism, Red Scare<br>
+      🪖 <strong>Military:</strong> Cold War, Proxy War, Arms Race, Nuclear, Spy<br>
+      💵 <strong>Economic:</strong> Capitalism<br>
+      🔁 <strong>Multiple:</strong> Ally, Tension, Satellite (it has both a space meaning AND a political meaning!)<br><br>
+      <em style="color:rgba(245,240,232,0.55)">There is no single right answer — what matters is your reasoning!</em>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// =====================
+// VOCAB DATA
+// =====================
+const vocab = [
+  { term:"Democracy",  emoji:"🗳",   def:"A system where <b>people vote</b> for leaders.", plain:"A system where people vote for leaders." },
+  { term:"Communism",  emoji:"🔴",   def:"A system where the <b>government owns everything</b>, and everyone is equal.", plain:"A system where the government owns everything, and everyone is equal." },
+  { term:"Cold War",   emoji:"🧊⚔️", def:"A time of <b>tension</b> between the U.S. and Soviet Union — no direct war.", plain:"A time of tension between the U.S. and Soviet Union (no direct war)." },
+  { term:"Capitalism", emoji:"💵",   def:"An economic system where <b>people own businesses</b> and make money.", plain:"An economic system where people own businesses and make money." },
+  { term:"Nuclear",    emoji:"☢️",   def:"A <b>powerful type</b> of weapon or energy.", plain:"A powerful type of weapon or energy." },
+  { term:"Spy",        emoji:"🕵",   def:"A person who <b>secretly gets information</b>.", plain:"A person who secretly gets information." },
+  { term:"Proxy War",  emoji:"🪖",   def:"A war where <b>big countries help others</b> fight instead of fighting themselves.", plain:"A war where big countries help others fight instead of fighting themselves." },
+  { term:"Red Scare",  emoji:"🔴😱", def:"A time in the U.S. when people were <b>afraid of communism</b>.", plain:"A time in the U.S. when people were afraid of communism." },
+  { term:"Ally",       emoji:"🤝",   def:"A country that <b>helps or supports</b> another country.", plain:"A country that helps or supports another country." },
+  { term:"Tension",    emoji:"😬",   def:"<b>Stress or fear</b> between people or countries.", plain:"Stress or fear between people or countries." },
+  { term:"Satellite",  emoji:"🛰",   def:"A machine sent into <b>space to orbit</b> the Earth.", plain:"A machine sent into space to orbit the Earth." },
+  { term:"Arms Race",  emoji:"💣🏃", def:"A <b>competition</b> between countries to build the most powerful weapons.", plain:"A competition between countries to build the most powerful weapons." },
+];
+
+// =====================
+// GLOBAL STATE
+// =====================
+let studentName = '';
+let score = 0;
+const completed = { flashcard: false, match: false, sentences: false, sort: false };
+
+function addScore(pts) { score += pts; document.getElementById('score').textContent = score; }
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+// =====================
+// NAME GATE
+// =====================
+function startGame() {
+  const val = document.getElementById('student-name-input').value.trim();
+  if (val.length < 2) { document.getElementById('student-name-input').style.borderColor = 'var(--red)'; return; }
+  studentName = val;
+  document.getElementById('name-display').textContent = '👤 ' + val;
+  document.getElementById('name-gate').style.display = 'none';
+}
+
+// =====================
+// MODE SWITCHING
+// =====================
+function switchMode(mode, btn) {
+  document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('mode-' + mode).classList.add('active');
+  btn.classList.add('active');
+}
+
+// =====================
+// COMPLETION TRACKING
+// =====================
+function completeMode(mode) {
+  if (completed[mode]) return;
+  completed[mode] = true;
+  document.getElementById('track-' + mode).classList.add('done');
+  document.getElementById('btn-' + mode).classList.add('completed');
+  addScore(20);
+  if (Object.values(completed).every(Boolean)) showCompletion();
+}
+
+function showCompletion() {
+  document.getElementById('completion-screen').classList.add('show');
+  setTimeout(drawCertificate, 80);
+}
+
+function drawCertificate() {
+  const canvas = document.getElementById('cert-canvas');
+  const W = 800, H = 560;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  ctx.fillStyle = '#0d1b2a';
+  ctx.fillRect(0, 0, W, H);
+
+  // Outer border
+  ctx.strokeStyle = '#e9c46a';
+  ctx.lineWidth = 6;
+  ctx.strokeRect(14, 14, W-28, H-28);
+
+  // Inner border
+  ctx.strokeStyle = 'rgba(233,196,106,0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(26, 26, W-52, H-52);
+
+  // Corner stars
+  const corners = [[40,40],[W-40,40],[40,H-40],[W-40,H-40]];
+  ctx.fillStyle = '#e9c46a';
+  ctx.font = '22px serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  corners.forEach(([x,y]) => ctx.fillText('★', x, y));
+
+  // Header bar
+  const grad = ctx.createLinearGradient(0, 55, W, 55);
+  grad.addColorStop(0, 'rgba(193,18,31,0.0)');
+  grad.addColorStop(0.3, 'rgba(193,18,31,0.25)');
+  grad.addColorStop(0.7, 'rgba(193,18,31,0.25)');
+  grad.addColorStop(1, 'rgba(193,18,31,0.0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 50, W, 70);
+
+  // Unit label
+  ctx.fillStyle = '#e9c46a';
+  ctx.font = 'bold 13px "Arial Narrow", Arial, sans-serif';
+  ctx.letterSpacing = '4px';
+  ctx.textAlign = 'center';
+  ctx.fillText('US HISTORY  ·  ELL VOCABULARY PRACTICE', W/2, 72);
+
+  // Main title
+  ctx.fillStyle = '#f5f0e8';
+  ctx.font = 'bold 42px "Arial Black", "Arial Bold", Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('CERTIFICATE', W/2, 148);
+
+  ctx.fillStyle = '#e9c46a';
+  ctx.font = '18px Arial, sans-serif';
+  ctx.fillText('OF COMPLETION', W/2, 176);
+
+  // Divider
+  ctx.strokeStyle = 'rgba(233,196,106,0.4)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(80, 196); ctx.lineTo(W-80, 196); ctx.stroke();
+
+  // "This certifies that" text
+  ctx.fillStyle = 'rgba(216,228,240,0.7)';
+  ctx.font = 'italic 15px Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('This certifies that', W/2, 228);
+
+  // Student name
+  ctx.fillStyle = '#e9c46a';
+  ctx.font = 'bold 38px Georgia, serif';
+  ctx.textAlign = 'center';
+  // Scale font down if name is long
+  let nameFontSize = 38;
+  while (ctx.measureText(studentName).width > W - 120 && nameFontSize > 22) {
+    nameFontSize--;
+    ctx.font = `bold ${nameFontSize}px Georgia, serif`;
+  }
+  ctx.fillText(studentName, W/2, 278);
+
+  // Name underline
+  const nameW = Math.min(ctx.measureText(studentName).width + 40, W - 100);
+  ctx.strokeStyle = 'rgba(233,196,106,0.5)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(W/2 - nameW/2, 290); ctx.lineTo(W/2 + nameW/2, 290); ctx.stroke();
+
+  // Activity description
+  ctx.fillStyle = 'rgba(216,228,240,0.8)';
+  ctx.font = '15px Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('has successfully completed all 4 activities in the', W/2, 320);
+
+  ctx.fillStyle = '#f5f0e8';
+  ctx.font = 'bold 20px Arial, sans-serif';
+  ctx.fillText('Cold War Vocabulary Practice', W/2, 350);
+
+  // Activity badges row
+  const badges = ['📇 Flip Cards', '🔗 Match It', '✏️ Fill In', '🗂️ Word Sort'];
+  const bW = 160, bH = 36, gap = 14;
+  const totalBW = badges.length * bW + (badges.length-1) * gap;
+  const startX = (W - totalBW) / 2;
+  badges.forEach((label, i) => {
+    const bx = startX + i * (bW + gap);
+    const by = 372;
+    ctx.fillStyle = 'rgba(45,106,79,0.35)';
+    ctx.beginPath();
+    ctx.roundRect(bx, by, bW, bH, 18);
+    ctx.fill();
+    ctx.strokeStyle = '#2d6a4f';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.fillStyle = '#6fcf97';
+    ctx.font = '12px Arial, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(label, bx + bW/2, by + 22);
+  });
+
+  // Score
+  ctx.fillStyle = 'rgba(233,196,106,0.7)';
+  ctx.font = '13px Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(`Score: ${score} points`, W/2, 435);
+
+  // Date
+  const d = new Date();
+  const dateStr = d.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  ctx.fillStyle = 'rgba(216,228,240,0.5)';
+  ctx.font = '12px Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(`Completed: ${dateStr}`, W/2, 458);
+
+  // Bottom divider
+  ctx.strokeStyle = 'rgba(233,196,106,0.25)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(80, 474); ctx.lineTo(W-80, 474); ctx.stroke();
+
+  // Teacher line
+  ctx.fillStyle = 'rgba(216,228,240,0.35)';
+  ctx.font = '11px Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('US History · ELL Sheltered Instruction', W/2, 498);
+
+  // Watermark stars
+  ctx.fillStyle = 'rgba(233,196,106,0.08)';
+  ctx.font = '120px serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('★', W/2, H/2 + 20);
+}
+
+function downloadCert() {
+  const canvas = document.getElementById('cert-canvas');
+  if (!canvas || canvas.width === 0) { alert('Certificate not ready yet — please wait a moment and try again.'); return; }
+  
+  try {
+    const dataURL = canvas.toDataURL('image/png');
+    const safeName = studentName.replace(/[^a-zA-Z0-9]/g, '_');
+    const link = document.createElement('a');
+    link.download = `ColdWar_Vocab_Certificate_${safeName}.png`;
+    link.href = dataURL;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch(e) {
+    // Fallback: open image in new tab so student can right-click save
+    const dataURL = canvas.toDataURL('image/png');
+    const win = window.open('', '_blank');
+    win.document.write('<html><body style="margin:0;background:#0d1b2a">'
+      + '<p style="color:#e9c46a;font-family:Arial;padding:12px;font-size:13px">'
+      + '⬇️ Right-click the image below and choose <strong>Save image as</strong> to download your certificate.</p>'
+      + '<img src="' + dataURL + '" style="max-width:100%;display:block">'
+      + '</body></html>');
+  }
+}
+
+// =====================
+// DEFINITION MATCH MODE
+// =====================
+let dmDeck = [], dmIndex = 0, dmCorrect = 0, dmWrong = 0, dmMissed = [];
+
+function dmInit(missedOnly) {
+  dmMissed = [];
+  dmCorrect = 0; dmWrong = 0;
+  dmDeck = shuffle(missedOnly ? [...missedOnly] : [...vocab]);
+  dmIndex = 0;
+  document.getElementById('fc-done').style.display = 'none';
+  document.getElementById('dm-card').style.display = '';
+  document.getElementById('dm-choices').style.display = 'grid';
+  document.getElementById('dm-next').style.display = 'none';
+  updateDmTally();
+  dmShowCard();
+}
+
+function dmShowCard() {
+  if (dmIndex >= dmDeck.length) { dmShowDone(); return; }
+  const card = dmDeck[dmIndex];
+  const total = dmDeck.length;
+
+  document.getElementById('fc-counter').textContent = `Question ${dmIndex+1} of ${total}`;
+  document.getElementById('fc-progress').style.width = ((dmIndex / total) * 100) + '%';
+  document.getElementById('dm-emoji').textContent = card.emoji;
+  document.getElementById('dm-def').innerHTML = card.def;
+
+  // Reset card state
+  const cardEl = document.getElementById('dm-card');
+  cardEl.classList.remove('correct-card','wrong-card');
+  const fb = document.getElementById('dm-feedback');
+  fb.className = 'dm-feedback'; fb.textContent = '';
+
+  // Build 4 choices: correct + 3 random distractors
+  const others = shuffle(vocab.filter(v => v.term !== card.term)).slice(0, 3);
+  const choices = shuffle([card, ...others]);
+
+  const choicesEl = document.getElementById('dm-choices');
+  choicesEl.innerHTML = '';
+  choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'dm-choice';
+    btn.textContent = choice.term;
+    btn.onclick = () => dmAnswer(choice.term === card.term, btn, card.term);
+    choicesEl.appendChild(btn);
+  });
+
+  document.getElementById('dm-next').style.display = 'none';
+}
+
+function dmAnswer(isCorrect, clickedBtn, correctTerm) {
+  // Disable all buttons
+  document.querySelectorAll('.dm-choice').forEach(b => b.disabled = true);
+
+  const card = dmDeck[dmIndex];
+  const fb = document.getElementById('dm-feedback');
+  const cardEl = document.getElementById('dm-card');
+
+  if (isCorrect) {
+    clickedBtn.classList.add('correct-ans');
+    cardEl.classList.add('correct-card');
+    fb.className = 'dm-feedback correct';
+    fb.textContent = '✅ Correct!';
+    dmCorrect++;
+    addScore(6);
+  } else {
+    clickedBtn.classList.add('wrong-ans');
+    cardEl.classList.add('wrong-card');
+    fb.className = 'dm-feedback wrong';
+    fb.textContent = `❌ The answer is: ${correctTerm}`;
+    dmWrong++;
+    dmMissed.push(card);
+    // Highlight the correct button green
+    document.querySelectorAll('.dm-choice').forEach(b => {
+      if (b.textContent === correctTerm) b.classList.add('correct-ans');
+    });
+  }
+
+  updateDmTally();
+  document.getElementById('dm-next').style.display = 'inline-block';
+}
+
+function dmNext() {
+  dmIndex++;
+  dmShowCard();
+}
+
+function updateDmTally() {
+  document.getElementById('tally-correct').textContent = dmCorrect;
+  document.getElementById('tally-wrong').textContent = dmWrong;
+}
+
+function dmShowDone() {
+  document.getElementById('fc-progress').style.width = '100%';
+  document.getElementById('dm-card').style.display = 'none';
+  document.getElementById('dm-choices').style.display = 'none';
+  document.getElementById('dm-next').style.display = 'none';
+  document.getElementById('fc-done').style.display = 'block';
+
+  const total = dmDeck.length;
+  const pct = Math.round((dmCorrect / total) * 100);
+  const mCount = dmMissed.length;
+  document.getElementById('learning-count').textContent = mCount;
+
+  if (pct === 100) {
+    document.getElementById('fc-done-title').textContent = 'Perfect Score! 🎉';
+    document.getElementById('fc-done-body').textContent = `You matched all ${total} definitions correctly. Excellent work!`;
+  } else {
+    document.getElementById('fc-done-title').textContent = `Round Complete — ${pct}%`;
+    document.getElementById('fc-done-body').textContent =
+      `You got ${dmCorrect} out of ${total} correct.` +
+      (mCount > 0 ? ` Try again on the ${mCount} word${mCount>1?'s':''} you missed.` : '');
+  }
+
+  document.getElementById('drill-again-btn').style.display = mCount > 0 ? 'inline-block' : 'none';
+
+  // Auto-complete if they finished (even with some wrong — effort counts)
+  completeMode('flashcard');
+}
+
+function dmStartMissed() {
+  const missed = [...dmMissed];
+  dmInit(missed);
+}
+
+dmInit();
+
+// =====================
+// MATCH MODE
+// =====================
+let matchSelected = null;
+let matchPairsFound = 0;
+let matchRound = 1;
+const matchSets = [
+  [0,1,2,3,4,5],
+  [6,7,8,9,10,11]
+];
+
+function initMatch() {
+  matchSelected = null;
+  matchPairsFound = 0;
+  document.getElementById('match-score').textContent = '0';
+  document.getElementById('match-round-info').innerHTML =
+    `Round ${matchRound} of 2 · Pairs found: <span id="match-score">0</span>/6`;
+
+  const setIdx = matchRound === 1 ? 0 : 1;
+  const set = matchSets[setIdx].map(i => vocab[i]);
+  const terms = set.map((v,i) => ({ id:'t'+i, text: v.emoji + ' ' + v.term, pair:i, type:'term' }));
+  const defs  = set.map((v,i) => ({ id:'d'+i, text: v.plain, pair:i, type:'def' }));
+  const all = shuffle([...terms, ...defs]);
+
+  const grid = document.getElementById('match-grid');
+  grid.innerHTML = '';
+  all.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'match-card ' + item.type;
+    div.textContent = item.text;
+    div.dataset.pair = item.pair;
+    div.dataset.type = item.type;
+    div.onclick = () => handleMatchClick(div, item);
+    grid.appendChild(div);
+  });
+  document.getElementById('match-feedback').textContent = 'Select a word to begin.';
+}
+
+function handleMatchClick(el, item) {
+  if (el.classList.contains('matched')) return;
+  if (matchSelected === null) {
+    matchSelected = { el, item };
+    el.classList.add('selected');
+    document.getElementById('match-feedback').textContent = `Selected: ${item.text}`;
+  } else {
+    const prev = matchSelected;
+    if (prev.el === el) { el.classList.remove('selected'); matchSelected = null; return; }
+    if (prev.item.pair === item.pair && prev.item.type !== item.type) {
+      prev.el.classList.remove('selected'); prev.el.classList.add('matched');
+      el.classList.add('matched');
+      matchSelected = null;
+      matchPairsFound++;
+      addScore(5);
+      document.getElementById('match-score').textContent = matchPairsFound;
+      document.getElementById('match-round-info').innerHTML =
+        `Round ${matchRound} of 2 · Pairs found: <span id="match-score">${matchPairsFound}</span>/6`;
+      if (matchPairsFound === 6) {
+        if (matchRound === 1) {
+          document.getElementById('match-feedback').textContent = '✅ Round 1 done! Loading Round 2…';
+          matchRound = 2;
+          setTimeout(initMatch, 1200);
+        } else {
+          document.getElementById('match-feedback').textContent = '🎉 Both rounds complete!';
+          setTimeout(() => completeMode('match'), 800);
+        }
+      } else {
+        document.getElementById('match-feedback').textContent = '✅ Match! Keep going!';
+      }
+    } else {
+      el.classList.add('wrong-flash'); prev.el.classList.add('wrong-flash');
+      setTimeout(() => { el.classList.remove('wrong-flash'); prev.el.classList.remove('wrong-flash','selected'); matchSelected = null; }, 520);
+      document.getElementById('match-feedback').textContent = '❌ Not a match. Try again!';
+    }
+  }
+}
+
+matchRound = 1;
+initMatch();
+
+// =====================
+// SENTENCES MODE — drag & drop
+// =====================
+const sentences = [
+  { text:"During the Cold War, the United States used ___ as its economic system, while the Soviet Union used ___.", blanks:["Capitalism","Communism"] },
+  { text:"The ___ between the United States and the Soviet Union meant they never fought directly, but there was a lot of ___.", blanks:["Cold War","Tension"] },
+  { text:"The United States and its ___ countries worked together against communism.", blanks:["Ally"] },
+  { text:"The ___ made many Americans afraid of communists living in their own country.", blanks:["Red Scare"] },
+  { text:"The ___ was a competition where the U.S. and Soviet Union tried to build the most ___ weapons.", blanks:["Arms Race","Nuclear"] },
+  { text:"A ___ is a secret agent who collects information about the enemy.", blanks:["Spy"] },
+  { text:"In a ___, powerful countries support smaller countries fighting each other instead of fighting themselves.", blanks:["Proxy War"] },
+  { text:"The Soviet Union launched a ___ called Sputnik into orbit, which surprised the entire world.", blanks:["Satellite"] },
+];
+
+// drag state
+let dragWord = null;       // word string being dragged
+let ghostEl = null;        // floating ghost element
+let dragSourceChip = null; // the original chip el (to mark dimmed)
+
+function chipId(word) { return 'chip-' + word.replace(/\s+/g,'-'); }
+function blankId(si, bi) { return `blank-${si}-${bi}`; }
+
+function initSentences() {
+  dragWord = null; ghostEl = null; dragSourceChip = null;
+
+  // Build word bank — all unique blanks shuffled
+  const allBlanks = [];
+  sentences.forEach(s => s.blanks.forEach(b => allBlanks.push(b)));
+  const bank = shuffle([...new Set(allBlanks)]);
+
+  let bankHTML = `<div class="word-bank-label">Word Bank — drag a word to a blank</div><div class="word-bank" id="word-bank">`;
+  bank.forEach(w => {
+    bankHTML += `<span class="drag-chip" id="${chipId(w)}" data-word="${w}">${w}</span>`;
+  });
+  bankHTML += `</div>`;
+  document.getElementById('word-bank-container').innerHTML = bankHTML;
+
+  // Build sentences — fix: split on ___ so multi-blank sentences work correctly
+  let sentHTML = '';
+  sentences.forEach((s, si) => {
+    const parts = s.text.split('___');
+    let html = '';
+    parts.forEach((part, pi) => {
+      html += part;
+      if (pi < s.blanks.length) {
+        html += `<span class="blank" id="${blankId(si,pi)}" data-si="${si}" data-bi="${pi}" data-answer="${s.blanks[pi]}">drop here</span>`;
+      }
+    });
+    sentHTML += `<div class="sentence-card"><div class="sentence-prompt">${html}</div><div class="answer-reveal" id="result-${si}"></div></div>`;
+  });
+  document.getElementById('sentences-container').innerHTML = sentHTML;
+  document.getElementById('check-sentences-btn').disabled = false;
+
+  attachDragListeners();
+}
+
+function attachDragListeners() {
+  // Chip listeners
+  document.querySelectorAll('.drag-chip').forEach(chip => {
+    chip.addEventListener('mousedown', onChipMouseDown);
+    chip.addEventListener('touchstart', onChipTouchStart, { passive: false });
+  });
+  // Blank click-to-return (click a filled blank to send word back to bank)
+  document.querySelectorAll('.blank').forEach(blank => {
+    blank.addEventListener('click', onBlankClick);
+  });
+}
+
+// ---- MOUSE drag ----
+function onChipMouseDown(e) {
+  const word = e.currentTarget.dataset.word;
+  if (!word) return;
+  e.preventDefault();
+  startDrag(word, e.currentTarget, e.clientX, e.clientY);
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+}
+function onMouseMove(e) { moveGhost(e.clientX, e.clientY); }
+function onMouseUp(e) {
+  const target = getBlankUnderPoint(e.clientX, e.clientY);
+  endDrag(target);
+  document.removeEventListener('mousemove', onMouseMove);
+  document.removeEventListener('mouseup', onMouseUp);
+}
+
+// ---- TOUCH drag ----
+function onChipTouchStart(e) {
+  const word = e.currentTarget.dataset.word;
+  if (!word) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  startDrag(word, e.currentTarget, t.clientX, t.clientY);
+  document.addEventListener('touchmove', onTouchMove, { passive: false });
+  document.addEventListener('touchend', onTouchEnd);
+}
+function onTouchMove(e) { e.preventDefault(); const t = e.touches[0]; moveGhost(t.clientX, t.clientY); }
+function onTouchEnd(e) {
+  const t = e.changedTouches[0];
+  const target = getBlankUnderPoint(t.clientX, t.clientY);
+  endDrag(target);
+  document.removeEventListener('touchmove', onTouchMove);
+  document.removeEventListener('touchend', onTouchEnd);
+}
+
+// ---- Core drag helpers ----
+function startDrag(word, chipEl, x, y) {
+  dragWord = word;
+  dragSourceChip = chipEl;
+  chipEl.classList.add('dragging');
+
+  ghostEl = document.createElement('span');
+  ghostEl.className = 'drag-chip ghost';
+  ghostEl.textContent = word;
+  document.body.appendChild(ghostEl);
+  moveGhost(x, y);
+}
+
+function moveGhost(x, y) {
+  if (!ghostEl) return;
+  ghostEl.style.left = (x - ghostEl.offsetWidth / 2) + 'px';
+  ghostEl.style.top  = (y - ghostEl.offsetHeight / 2) + 'px';
+
+  // Highlight blank under cursor
+  document.querySelectorAll('.blank').forEach(b => b.classList.remove('drag-over'));
+  const target = getBlankUnderPoint(x, y);
+  if (target) target.classList.add('drag-over');
+}
+
+function endDrag(targetBlank) {
+  if (ghostEl) { ghostEl.remove(); ghostEl = null; }
+  if (dragSourceChip) dragSourceChip.classList.remove('dragging');
+  document.querySelectorAll('.blank').forEach(b => b.classList.remove('drag-over'));
+
+  if (targetBlank && dragWord) {
+    dropWordOnBlank(dragWord, targetBlank);
+  }
+  dragWord = null;
+  dragSourceChip = null;
+}
+
+function getBlankUnderPoint(x, y) {
+  // Temporarily hide ghost so elementFromPoint works
+  if (ghostEl) ghostEl.style.display = 'none';
+  const el = document.elementFromPoint(x, y);
+  if (ghostEl) ghostEl.style.display = '';
+  if (!el) return null;
+  if (el.classList.contains('blank')) return el;
+  return el.closest('.blank');
+}
+
+function dropWordOnBlank(word, blankEl) {
+  const prevWord = blankEl.dataset.filled;
+  // If blank already had a word, return it to bank
+  if (prevWord) returnWordToBank(prevWord);
+
+  // If the dragged word was in another blank, clear that blank
+  clearWordFromBlanks(word);
+
+  // Place word
+  blankEl.dataset.filled = word;
+  blankEl.textContent = word;
+  blankEl.classList.add('filled');
+
+  // Dim chip in bank
+  const chip = document.getElementById(chipId(word));
+  if (chip) chip.style.opacity = '0.25';
+}
+
+function onBlankClick(e) {
+  const blankEl = e.currentTarget;
+  const word = blankEl.dataset.filled;
+  if (!word) return;
+  returnWordToBank(word);
+  blankEl.dataset.filled = '';
+  blankEl.textContent = 'drop here';
+  blankEl.classList.remove('filled');
+}
+
+function returnWordToBank(word) {
+  const chip = document.getElementById(chipId(word));
+  if (chip) chip.style.opacity = '';
+}
+
+function clearWordFromBlanks(word) {
+  document.querySelectorAll('.blank').forEach(b => {
+    if (b.dataset.filled === word) {
+      b.dataset.filled = '';
+      b.textContent = 'drop here';
+      b.classList.remove('filled');
+    }
+  });
+}
+
+function checkSentences() {
+  let correct = 0, total = 0;
+  sentences.forEach((s, si) => {
+    let allRight = true;
+    s.blanks.forEach((b, bi) => {
+      total++;
+      const blankEl = document.getElementById(blankId(si, bi));
+      const filled = blankEl ? blankEl.dataset.filled : '';
+      if (filled === b) correct++;
+      else allRight = false;
+    });
+    const r = document.getElementById(`result-${si}`);
+    if (allRight) { r.className = 'answer-reveal correct'; r.textContent = '✅ Correct!'; }
+    else { r.className = 'answer-reveal incorrect'; r.textContent = `Answer: ${s.blanks.join(', ')}`; }
+  });
+  addScore(correct * 4);
+  if (correct === total) { setTimeout(() => completeMode('sentences'), 600); }
+  document.getElementById('check-sentences-btn').disabled = true;
+}
+
+initSentences();
+
+// =====================
+// WORD SORT MODE
+// =====================
+let sortSelected = null;
+const sortPlacements = {};
+
+function initSort() {
+  sortSelected = null;
+  Object.keys(sortPlacements).forEach(k => delete sortPlacements[k]);
+  ['politics','military','economics','both'].forEach(cat => {
+    document.getElementById('dropped-'+cat).innerHTML = '';
+  });
+  document.getElementById('sort-reveal').style.display = 'none';
+  updateSortRemaining();
+
+  const pool = document.getElementById('sort-pool');
+  pool.innerHTML = '';
+  shuffle(vocab).forEach(v => {
+    const el = document.createElement('span');
+    el.className = 'sortable-word';
+    el.id = 'sw-' + v.term.replace(/\s/g,'');
+    el.textContent = v.term;
+    el.onclick = () => selectSortWord(v.term, el);
+    pool.appendChild(el);
+  });
+}
+
+function updateSortRemaining() {
+  const placed = Object.keys(sortPlacements).length;
+  const rem = vocab.length - placed;
+  document.getElementById('sort-remaining').textContent =
+    rem > 0 ? `${rem} word${rem>1?'s':''} left to sort` : '✅ All words sorted!';
+}
+
+function selectSortWord(term, el) {
+  document.querySelectorAll('.sortable-word').forEach(e => e.style.outline = '');
+  document.querySelectorAll('.sort-category').forEach(c => c.classList.remove('highlight'));
+  if (sortSelected === term) { sortSelected = null; return; }
+  sortSelected = term;
+  el.style.outline = '2px solid var(--gold)';
+  document.querySelectorAll('.sort-category').forEach(c => c.classList.add('highlight'));
+}
+
+function placeInCategory(cat) {
+  if (!sortSelected) return;
+  const existing = sortPlacements[sortSelected];
+  if (existing) { document.getElementById('dropped-'+existing).querySelector(`[data-term="${sortSelected}"]`)?.remove(); }
+  sortPlacements[sortSelected] = cat;
+
+  const poolEl = document.getElementById('sw-' + sortSelected.replace(/\s/g,''));
+  if (poolEl) poolEl.classList.add('placed');
+
+  const placed = document.createElement('span');
+  placed.className = 'placed-word';
+  placed.textContent = sortSelected;
+  placed.dataset.term = sortSelected;
+  placed.title = 'Click to return';
+  placed.onclick = () => { placed.remove(); delete sortPlacements[sortSelected === placed.dataset.term ? sortSelected : placed.dataset.term]; if(poolEl) poolEl.classList.remove('placed'); updateSortRemaining(); };
+  const term = sortSelected;
+  placed.onclick = () => removePlaced(term, cat, placed);
+  document.getElementById('dropped-'+cat).appendChild(placed);
+
+  sortSelected = null;
+  document.querySelectorAll('.sortable-word').forEach(e => e.style.outline = '');
+  document.querySelectorAll('.sort-category').forEach(c => c.classList.remove('highlight'));
+  updateSortRemaining();
+}
+
+function removePlaced(term, cat, el) {
+  el.remove();
+  delete sortPlacements[term];
+  const poolEl = document.getElementById('sw-' + term.replace(/\s/g,''));
+  if (poolEl) poolEl.classList.remove('placed');
+  updateSortRemaining();
+}
+
+function checkSort() {
+  document.getElementById('sort-reveal').style.display = 'block';
+  addScore(10);
+  const placed = Object.keys(sortPlacements).length;
+  if (placed === vocab.length) { setTimeout(() => completeMode('sort'), 800); }
+  else { completeMode('sort'); } // allow completion even if not all placed — discussion is the goal
+}
+
+initSort();
+</script>
+</body>
+</html>
