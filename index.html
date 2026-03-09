@@ -285,12 +285,40 @@
   }
   .blank.filled:hover { background: rgba(193,18,31,0.15); border-bottom-color: #ff8080; color: #ffaaaa; }
 
+  /* Locked correct blank — can't be changed */
+  .blank.locked {
+    background: rgba(45,106,79,0.22);
+    border-bottom-color: #6fcf97; border-bottom-width: 2px;
+    color: #6fcf97; cursor: default; pointer-events: none;
+  }
+  .blank.locked:hover { background: rgba(45,106,79,0.22); border-bottom-color: #6fcf97; color: #6fcf97; }
+
+  /* Wrong blank — flashes red then clears */
+  .blank.wrong-blank {
+    background: rgba(193,18,31,0.2);
+    border-bottom-color: var(--red); color: #ff8080;
+    animation: shake 0.4s ease;
+  }
+
+  /* Retry feedback bar */
+  .retry-banner {
+    padding: 12px 18px; border-radius: 8px; margin-bottom: 14px;
+    font-family: 'Oswald', sans-serif; font-size: 0.9rem; letter-spacing: 1px;
+    text-align: center; display: none;
+  }
+  .retry-banner.has-wrong {
+    background: rgba(193,18,31,0.15); border: 1px solid rgba(193,18,31,0.35);
+    color: #ffaaaa; display: block;
+  }
+  .retry-banner.all-correct {
+    background: rgba(45,106,79,0.2); border: 1px solid rgba(45,106,79,0.4);
+    color: #6fcf97; display: block;
+  }
+
   /* Hint below word bank */
   .fill-hint { font-size: 0.8rem; color: var(--light); opacity: 0.5; margin-bottom: 4px; font-style: italic; }
 
-  .answer-reveal { margin-top: 12px; padding: 12px 16px; border-radius: 8px; font-size: 0.88rem; line-height: 1.5; display: none; }
-  .answer-reveal.correct { background: rgba(45,106,79,0.22); border-left: 4px solid var(--green); color: #6fcf97; display: block; }
-  .answer-reveal.incorrect { background: rgba(193,18,31,0.18); border-left: 4px solid var(--red); color: #ffaaaa; display: block; }
+  .answer-reveal { display: none; }
 
   /* ===== WORD SORT ===== */
   .sort-instructions { background: rgba(233,196,106,0.07); border: 1px solid rgba(233,196,106,0.18); border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; font-size: 0.86rem; color: var(--light); line-height: 1.5; }
@@ -467,10 +495,11 @@
     <div class="section-title">Fill In the Blank</div>
     <p class="section-desc">Click a word in the word bank to select it — it will glow gold. Then click any blank to place it. Click a filled blank to return the word.</p>
     <div id="word-bank-container"></div>
+    <div class="retry-banner" id="retry-banner"></div>
     <div id="sentences-container"></div>
     <div class="btn-row" style="margin-top:6px">
       <button class="action-btn primary" onclick="checkSentences()" id="check-sentences-btn">Check My Answers</button>
-      <button class="action-btn secondary" onclick="initSentences()">🔁 Reset</button>
+      <button class="action-btn secondary" onclick="initSentences()">🔁 Reset All</button>
     </div>
   </div>
 
@@ -1095,23 +1124,59 @@ function returnWordToBank(word) {
 }
 
 function checkSentences() {
-  let correct = 0, total = 0;
+  let correct = 0, total = 0, wrongCount = 0;
+
   sentences.forEach((s, si) => {
-    let allRight = true;
-    s.blanks.forEach((b, bi) => {
+    s.blanks.forEach((answer, bi) => {
       total++;
       const blankEl = document.getElementById(blankId(si, bi));
-      const filled = blankEl ? blankEl.dataset.filled : '';
-      if (filled === b) correct++;
-      else allRight = false;
+      if (!blankEl || blankEl.classList.contains('locked')) {
+        // Already locked correct — count it and skip
+        correct++;
+        return;
+      }
+      const filled = blankEl.dataset.filled || '';
+
+      if (filled === answer) {
+        // ✅ Correct — lock it green, remove from interaction
+        correct++;
+        blankEl.classList.remove('filled', 'wrong-blank');
+        blankEl.classList.add('locked');
+        // Grey out the chip permanently
+        const chip = document.getElementById(chipId(answer));
+        if (chip) { chip.classList.add('used'); chip.style.opacity = '0.2'; chip.style.pointerEvents = 'none'; }
+      } else {
+        // ❌ Wrong — flash red, clear the blank, return word to bank
+        wrongCount++;
+        blankEl.classList.add('wrong-blank');
+        setTimeout(() => {
+          blankEl.classList.remove('wrong-blank', 'filled');
+          blankEl.textContent = 'tap here';
+          if (filled) returnWordToBank(filled);
+          blankEl.dataset.filled = '';
+        }, 600);
+      }
     });
-    const r = document.getElementById(`result-${si}`);
-    if (allRight) { r.className = 'answer-reveal correct'; r.textContent = '✅ Correct!'; }
-    else { r.className = 'answer-reveal incorrect'; r.textContent = `Answer: ${s.blanks.join(', ')}`; }
   });
-  addScore(correct * 4);
-  if (correct === total) { setTimeout(() => completeMode('sentences'), 600); }
-  document.getElementById('check-sentences-btn').disabled = true;
+
+  // Score only blanks newly locked this round (not ones already locked before)
+  const alreadyLocked = document.querySelectorAll('.blank.locked').length;
+  const newlyLocked = correct - (alreadyLocked - correct < 0 ? 0 : alreadyLocked - correct);
+  addScore(Math.max(0, newlyLocked) * 4);
+
+  // Update banner
+  const banner = document.getElementById('retry-banner');
+  if (wrongCount === 0) {
+    banner.className = 'retry-banner all-correct';
+    banner.textContent = '🎉 All correct! Great work!';
+    document.getElementById('check-sentences-btn').disabled = true;
+    setTimeout(() => completeMode('sentences'), 700);
+  } else {
+    banner.className = 'retry-banner has-wrong';
+    banner.textContent = `❌ ${wrongCount} answer${wrongCount > 1 ? 's' : ''} incorrect — fix the red blanks and try again!`;
+    // Keep button enabled so they can resubmit
+    document.getElementById('check-sentences-btn').disabled = false;
+  }
 }
 
 initSentences();
